@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  v2ray:
+    image: teddysun/v2ray
+    ports:
+      - 9000:9000
+    volumes:
+      - ./config.json:/etc/v2ray/config.json
