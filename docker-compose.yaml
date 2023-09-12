@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.3'
 
 services:
   v2ray:
@@ -7,3 +7,4 @@ services:
       - 9000:9000
     volumes:
       - ./config.json:/etc/v2ray/config.json
+    restart: always
