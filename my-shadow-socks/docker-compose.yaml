@@ -1,0 +1,13 @@
+version: "3.3"
+services:
+  shadowSocks:
+    image: shadowsocks/shadowsocks-libev
+    container_name: shadowsocks
+    restart: unless-stopped
+    environment:    
+      - METHOD=aes-256-gcm
+      - PASSWORD=terence-zhan
+    # volumes:
+    #   - ./data/shadowsocks:/etc/shadowsocks
+    ports:
+      - "443:8388"
