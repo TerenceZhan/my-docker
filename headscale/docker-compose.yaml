@@ -1,0 +1,13 @@
+version: "3"
+services:
+  headscale:
+    platform: linux/amd64
+    image: headscale/headscale
+    ports:
+      - 18080:8080
+      - 19090:9090
+    restart: unless-stopped
+    volumes:
+      - ./config.yaml:/etc/headscale/config.yaml
+      - ./db.sqlite:/var/lib/headscale/db.sqlite
+    command: "headscale serve"
