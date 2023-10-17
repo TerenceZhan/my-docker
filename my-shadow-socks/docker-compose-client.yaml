@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  shadow-tls:
+    image: ghcr.io/ihciah/shadow-tls:latest
+    restart: unless-stopped
+    environment:
+      - MODE=client
+      - LISTEN=0.0.0.0:5555
+      - SERVER=$MY_VPS_IP:$PORT
+      - TLS=cloud.tencent.com
+      - PASSWORD=$PASSWORD
+    ports:
+      - 33443:5555

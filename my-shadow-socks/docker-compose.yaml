@@ -1,13 +1,28 @@
-version: "3.3"
+version: "3"
 services:
-  shadowSocks:
+  shadowsocks:
     image: shadowsocks/shadowsocks-libev
-    container_name: shadowsocks
+    # container_name: shadowsocks
     restart: unless-stopped
-    environment:    
+    environment:
+      - SERVER_PORT=58888
+      - PASSWORD=$PASSWORD
+      # - METHOD=chacha20-ietf-poly1305
       - METHOD=aes-256-gcm
-      - PASSWORD=terence-zhan
     # volumes:
     #   - ./data/shadowsocks:/etc/shadowsocks
+    # ports:
+    #   - "18388:8388"
+  shadowtls:
+    image: ghcr.io/ihciah/shadow-tls:latest
+    restart: unless-stopped
+    depends_on:
+      - shadowsocks
+    environment:
+      - MODE=server
+      - LISTEN=0.0.0.0:8443
+      - SERVER=shadowsocks:58888
+      - TLS=cloud.tencent.com:443
+      - PASSWORD=$PASSWORD
     ports:
-      - "443:8388"
+      - $PORT:8443
