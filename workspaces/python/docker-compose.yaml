@@ -1,0 +1,28 @@
+version: '3'
+
+x-tailscale_env: &tailscale_env
+  TS_STATE_DIR: /var/lib/tailscale
+  TS_USERSPACE: 1
+  TS_AUTHKEY: tskey-auth-k4W7Y64CNTRL-1FNRALw5rSRBaufnxbTCSRWjgVjLJox9h
+  TS_EXTRA_ARGS: "--advertise-exit-node"
+
+services:
+  dev:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dev-python
+    hostname: dev-python
+    privileged: true
+    command: "tailscale up --auth-key=tskey-auth-k4W7Y64CNTRL-1FNRALw5rSRBaufnxbTCSRWjgVjLJox9h"
+    networks:
+      - personal_net
+    environment:
+      PORT: 58080
+
+networks:
+  personal_net:
+    driver: bridge
+    driver_opts:
+      mtu: 1280

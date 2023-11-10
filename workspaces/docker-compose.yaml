@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  dev:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./python-ws/Dockerfile
+    command: "npx http-server -d"
+    environment:
+      PORT: 8080
+    ports:
+      - 58081:8080
+    network_mode: host

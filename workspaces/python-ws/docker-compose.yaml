@@ -1,0 +1,67 @@
+version: '3'
+
+x-tailscale_env: &tailscale_env
+  TS_STATE_DIR: /var/lib/tailscale
+  TS_USERSPACE: 1
+  TS_AUTHKEY: tskey-auth-k4yH1L2CNTRL-TmQEP8edp41uUHRVY1gJ411anTWVv1qs
+  TS_EXTRA_ARGS: "--advertise-exit-node"
+
+services:
+  dev:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # command: "tail -f /dev/null"
+    command: "npx http-server -d"
+    # network_mode: host
+    # networks:
+    #   vir_os_macvlan:
+    #     ipv4_address: 172.20.0.2
+    # networks:
+    #   - pub_net
+    # network_mode: bridge
+    networks:
+      - personal_net
+    environment:
+      PORT: 58080
+
+  tailscale:
+    image: tailscale/tailscale
+    container_name: ws-tailscale-for-py
+    hostname: ws-tailscale-for-py
+    restart: unless-stopped
+    environment:
+      <<: *tailscale_env
+    volumes:
+      # - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+      - /var/lib/tailscale-exitnode-1:/var/lib/tailscale
+    networks:
+      - personal_net
+
+networks:
+  personal_net:
+    driver: bridge
+    driver_opts:
+      mtu: 1280
+
+# networks:
+#   vir_os_macvlan:
+#     driver: macvlan
+#     driver_opts:
+#       parent: eth0
+#     ipam:
+#       config:
+#         - subnet: 172.16.86.0/24
+#           gateway: 172.16.86.1
+
+# networks:
+#   pub_net:
+#     driver: macvlan
+#     driver_opts:
+#       parent: eth0
+#       # mode: host
+#     ipam:
+#       config:
+#         - subnet: 192.168.65.0/24
+#           gateway: 192.168.65.1
