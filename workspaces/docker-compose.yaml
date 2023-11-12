@@ -1,14 +1,47 @@
 version: '3'
 
+x-base_service: &base_service
+  restart: unless-stopped
+  networks:
+    - workspaces_network
+  privileged: true
+
 services:
-  dev:
-    restart: unless-stopped
+  headscale:
+    <<: *base_service
+    container_name: ws_headscale
+    hostname: headscale
+    image: headscale/headscale:latest
+    volumes:
+      - ./configs/config.yaml:/etc/headscale/config.yaml
+      - ./configs/db.sqlite:/var/lib/headscale/db.sqlite
+      # - headscale-db:/var/lib/headscale/db.sqlite
+    ports:
+      - 58080:8080
+      - 59090:9090
+    # command: "tail -f /dev/null"
+    command: "headscale serve"
+
+  python:
+    <<: *base_service
     build:
       context: .
-      dockerfile: ./python-ws/Dockerfile
-    command: "npx http-server -d"
-    environment:
-      PORT: 8080
-    ports:
-      - 58081:8080
-    network_mode: host
+      dockerfile: ./python/Dockerfile
+    container_name: ws-python-dev
+    hostname: dev-python
+    privileged: true
+    depends_on:
+      - headscale
+    command: "tailscale up --login-server=http://headscale:8080 --auth-key=74240f7b6114d459f5ee54281ff1fe0b7bd1b5ad4ae91a21"
+    # environment:
+    # PORT: 58080
+
+networks:
+  workspaces_network:
+    name: workspaces_network_default
+    driver: bridge
+    driver_opts:
+      mtu: 1280
+
+volumes:
+  headscale-db:
