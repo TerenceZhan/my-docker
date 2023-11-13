@@ -1,4 +1,5 @@
 version: '3'
+name: workspaces
 
 x-base_service: &base_service
   restart: unless-stopped
